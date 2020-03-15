@@ -46,47 +46,60 @@ function love.load()
 end
 
 function love.update(dt)
-  if ball:collides(paddle1) then 
-    ball.dx = -ball.dx
-  end
-
-  if ball:collides(paddle2) then 
-    ball.dx = -ball.dx
-  end
-
-  if ball.y <= 0 then
-    ball.dy = -ball.dy
-    ball.y = 0
-  end
-
-  if ball.y >= VIRTUAL_HEIGHT - 4 then
-    ball.dy = -ball.dy
-    ball.y = VIRTUAL_HEIGHT - 4
-  end
-
-  -- Player 1 movement paddle
-  paddle1:update(dt)
-  if love.keyboard.isDown('w') then
-    paddle1.dy = -PADDLE_SPEED
-  elseif love.keyboard.isDown('s') then
-    paddle1.dy = PADDLE_SPEED
-  else
-    paddle1.dy = 0
-  end
-
-  -- Player 1 movement paddle
-  paddle2:update(dt)
-  if love.keyboard.isDown('up') then
-    paddle2.dy = -PADDLE_SPEED
-  elseif love.keyboard.isDown('down') then
-    paddle2.dy = PADDLE_SPEED
-  else
-    paddle2.dy = 0
-  end
-
   -- Begin Game
   if gameState == 'play' then
     ball:update(dt)
+
+    if ball.x <= 0 then
+      player2Score = player2Score + 1
+      ball:reset()
+      gameState = 'start'
+    end
+
+    if ball.x >= VIRTUAL_WIDTH - 4 then
+      player1Score = player1Score + 1
+      ball:reset()
+      gameState = 'start'
+    end
+
+    if ball:collides(paddle1) then 
+      ball.dx = -ball.dx
+    end
+
+    if ball:collides(paddle2) then 
+      ball.dx = -ball.dx
+    end
+
+    if ball.y <= 0 then
+      ball.dy = -ball.dy
+      ball.y = 0
+    end
+
+    if ball.y >= VIRTUAL_HEIGHT - 4 then
+      ball.dy = -ball.dy
+      ball.y = VIRTUAL_HEIGHT - 4
+    end
+
+    -- Player 1 movement paddle
+    paddle1:update(dt)
+    if love.keyboard.isDown('w') then
+      paddle1.dy = -PADDLE_SPEED
+    elseif love.keyboard.isDown('s') then
+      paddle1.dy = PADDLE_SPEED
+    else
+      paddle1.dy = 0
+    end
+
+    -- Player 1 movement paddle
+    paddle2:update(dt)
+    if love.keyboard.isDown('up') then
+      paddle2.dy = -PADDLE_SPEED
+    elseif love.keyboard.isDown('down') then
+      paddle2.dy = PADDLE_SPEED
+    else
+      paddle2.dy = 0
+    end
+
   end
 end
 
@@ -96,13 +109,6 @@ function love.keypressed(key)
   elseif key == 'enter' or key == 'return' then
     if gameState == 'start' then
       gameState = 'play'
-    elseif gameState == 'play' then
-      gameState = 'start'
-      ball:reset()
-
-      -- in C this is : ballDX = math.random(2) == 1 ? -BALL_SPEED : BALL_SPEED
-      ballDX = math.random(2) == 1 and -100 or 100
-      ballDY = math.random(-50, 50)
     end
   end
 end
@@ -118,14 +124,6 @@ function love.draw()
   love.graphics.setFont(scoreFont)
   love.graphics.print(player1Score, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
   love.graphics.print(player2Score, VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
-
-  -- Message
-  love.graphics.setFont(smallFont)
-  if gameState == 'start' then 
-    love.graphics.printf( "Hello Pong Start!", 0, 20, VIRTUAL_WIDTH, 'center')
-  elseif gameState == 'play' then 
-    love.graphics.printf( "Hello Pong Play!", 0, 20, VIRTUAL_WIDTH, 'center')
-  end
   
   -- Draw paddles
   paddle1:render()
